@@ -1,6 +1,7 @@
 import React, { useState } from "react";
+import {v4 as uuid} from 'uuid'
 
-function QuestionForm(props) {
+function QuestionForm({addNewQuestion}) {
   const [formData, setFormData] = useState({
     prompt: "",
     answer1: "",
@@ -19,7 +20,28 @@ function QuestionForm(props) {
 
   function handleSubmit(event) {
     event.preventDefault();
-    console.log(formData);
+    //console.log(formData);
+    const newQuestion = {
+      id: uuid(),
+      prompt : formData.prompt,
+      answers: [
+        formData.answer1,
+        formData.answer2,
+        formData.answer3,
+        formData.answer4
+      ],
+      correctIndex: formData.correctIndex
+    }
+    fetch('http://localhost:4000/questions',{
+      method:'POST',
+      headers:{ 
+        "Content-Type": "application/json" 
+      },
+      body: JSON.stringify(newQuestion)
+    })
+    .then((r) => r.json())
+    .then((addedQuestion) => addNewQuestion(addedQuestion))
+    .catch((error) => console.error("Post Error:", error))
   }
 
   return (
